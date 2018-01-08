@@ -2,11 +2,13 @@
 # Supported version:
 # PHP_VERSION = "5.6", "7.0", "7.1"
 # MYSQL_VERSION = "5.6", "5.7"
+# NODE_VERSION = "4", "5", "6", "7", "8", "9"
 #########################################################
 
 # Variables
 PHP_VERSION="7.0"
 MYSQL_VERSION="5.7"
+NODE_VERSION="8"
 DB_PASSWD_ROOT="root"
 VHOST=$(cat <<EOF
 <VirtualHost *:80>
@@ -81,7 +83,7 @@ php -r "unlink('composer-setup.php');" >> /vagrant/vagrant_build.log 2>&1
 
 # Installing Node
 echo -e "\n--- Installing and configuration Node.js... ---\n"
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - >> /vagrant/vagrant_build.log
+curl -sL https://deb.nodesource.com/setup_$NODE_VERSION.x | sudo -E bash - >> /vagrant/vagrant_build.log
 apt-get install -y nodejs >> /vagrant/vagrant_build.log
 
 # Installing javascript components
