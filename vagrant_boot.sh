@@ -1,15 +1,16 @@
-#########################################################
+################################################################
 # Supported version:
-# PHP_VERSION = "5.6", "7.0", "7.1"
+# PHP_VERSION = "5.6", "7.0", "7.1", "7.2", "7.3", "7.4"
 # MYSQL_VERSION = "5.6", "5.7"
-# NODE_VERSION = "4", "5", "6", "7", "8", "9"
-#########################################################
+# NODE_VERSION = "4", "5", "6", "7", "8", "9", "10", "11", "12"
+################################################################
 
 # Variables
-PHP_VERSION="7.0"
+PHP_VERSION="7.2"
 MYSQL_VERSION="5.7"
-NODE_VERSION="8"
+NODE_VERSION="12"
 DB_PASSWD_ROOT="root"
+
 VHOST=$(cat <<EOF
 <VirtualHost *:80>
   DocumentRoot "/var/www/app"
@@ -20,6 +21,7 @@ VHOST=$(cat <<EOF
 </VirtualHost>
 EOF
 )
+
 XDEBUG=$(cat <<EOF
 xdebug.remote_enable=1
 xdebug.remote_host=0.0.0.0
@@ -37,9 +39,6 @@ add-apt-repository 'deb http://archive.ubuntu.com/ubuntu trusty universe' >> /va
 
 echo -e "\n--- Updating packages list... ---\n"
 apt-get update >> /vagrant/vagrant_build.log 2>&1
-
-echo -e "\n--- Upgrading system... ---\n"
-apt-get -y upgrade >> /vagrant/vagrant_build.log 2>&1
 
 # Installing and configuration MySQL
 echo -e "\n--- Installing and configuration MySQL version: $MYSQL_VERSION... ---\n"
@@ -69,7 +68,20 @@ service apache2 restart
 # Installing and configuration PHP
 echo -e "\n--- Installing and configuration PHP version: $PHP_VERSION... ---\n"
 apt-get install -y php$PHP_VERSION >> /vagrant/vagrant_build.log 2>&1
-apt-get install -y php$PHP_VERSION-cli php$PHP_VERSION-cgi php$PHP_VERSION-curl php$PHP_VERSION-xml php$PHP_VERSION-zip php$PHP_VERSION-gd php$PHP_VERSION-mysql php$PHP_VERSION-mbstring php$PHP_VERSION-mcrypt php$PHP_VERSION-common php$PHP_VERSION-intl php$PHP_VERSION-xsl php$PHP_VERSION-json php$PHP_VERSION-sqlite3 php$PHP_VERSION-xdebug >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-cli >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-cgi >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-curl >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-xml >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-zip >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-gd >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-mysql >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-mbstring >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-common >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-intl >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-xsl >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-json >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-sqlite3 >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-xdebug >> /vagrant/vagrant_build.log 2>&1
 echo "${XDEBUG}" >> /etc/php/$PHP_VERSION/cli/conf.d/20-xdebug.ini
 
 service apache2 restart
@@ -84,7 +96,7 @@ php -r "unlink('composer-setup.php');" >> /vagrant/vagrant_build.log 2>&1
 # Installing Node
 echo -e "\n--- Installing and configuration Node.js... ---\n"
 curl -sL https://deb.nodesource.com/setup_$NODE_VERSION.x | sudo -E bash - >> /vagrant/vagrant_build.log
-apt-get install -y nodejs >> /vagrant/vagrant_build.log
+apt-get install -y nodejs >> /vagrant/vagrant_build.log 2>&1
 
 # Installing javascript components
 echo -e "\n--- Installing javascript components ---\n"
