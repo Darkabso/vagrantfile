@@ -31,6 +31,12 @@ xdebug.idekey="PHPSTORM"
 EOF
 )
 
+MYSQL_CONF=$(cat <<EOF
+[mysqld]
+bind-address = 0.0.0.0
+EOF
+)
+
 # Repositories
 echo -e "\n--- Adding repositories... ---\n"
 apt-add-repository ppa:ondrej/php >> /vagrant/vagrant_build.log 2>&1
@@ -52,7 +58,14 @@ elif [ $MYSQL_VERSION = "5.7" ]
 then
 	apt-get -y install mysql-server >> /vagrant/vagrant_build.log 2>&1
 fi
+
 service mysql start
+
+echo "${MYSQL_CONF}" >> /etc/mysql/my.cnf
+mysql -uroot -p$DB_PASSWD_ROOT -e "CREATE USER 'root'@'%' IDENTIFIED BY '$DB_PASSWD_ROOT';" >> /vagrant/vagrant_build_mysql.log 2>&1
+mysql -uroot -p$DB_PASSWD_ROOT -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';" >> /vagrant/vagrant_build_mysql.log 2>&1
+
+service mysql restart
 
 # Installing and configuration Apache2
 echo -e "\n--- Installing and configuration Apache2... ---\n"
