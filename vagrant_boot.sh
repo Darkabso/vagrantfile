@@ -101,3 +101,24 @@ apt-get install -y nodejs >> /vagrant/vagrant_build.log 2>&1
 # Installing javascript components
 echo -e "\n--- Installing javascript components ---\n"
 npm install -g gulp bower yarn >> /vagrant/vagrant_build.log 2>&1
+
+# Installing mailhog components
+echo -e "\n--- Installing Mailhog... ---\n"
+wget https://github.com/mailhog/MailHog/releases/download/v1.0.0/MailHog_linux_amd64 >> /vagrant/vagrant_build.log 2>&1
+cp MailHog_linux_amd64 /usr/local/bin/mailhog >> /vagrant/vagrant_build.log 2>&1
+chmod +x /usr/local/bin/mailhog >> /vagrant/vagrant_build.log 2>&1
+
+tee /etc/systemd/system/mailhog.service <<EOL
+[Unit]
+Description=Mailhog
+After=network.target
+[Service]
+User=vagrant
+ExecStart=/usr/bin/env /usr/local/bin/mailhog > /dev/null 2>&1 &
+[Install]
+WantedBy=multi-user.target
+EOL
+
+systemctl daemon-reload
+systemctl enable mailhog
+service mailhog restart
