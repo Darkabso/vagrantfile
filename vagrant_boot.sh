@@ -62,8 +62,8 @@ fi
 service mysql start
 
 echo "${MYSQL_CONF}" >> /etc/mysql/my.cnf
-mysql -uroot -p$DB_PASSWD_ROOT -e "CREATE USER 'root'@'%' IDENTIFIED BY '$DB_PASSWD_ROOT';" >> /vagrant/vagrant_build_mysql.log 2>&1
-mysql -uroot -p$DB_PASSWD_ROOT -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';" >> /vagrant/vagrant_build_mysql.log 2>&1
+mysql -uroot -p$DB_PASSWD_ROOT -e "CREATE USER 'root'@'%' IDENTIFIED BY '$DB_PASSWD_ROOT';" >> /vagrant/vagrant_build.log 2>&1
+mysql -uroot -p$DB_PASSWD_ROOT -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';" >> /vagrant/vagrant_build.log 2>&1
 
 service mysql restart
 
