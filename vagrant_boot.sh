@@ -76,6 +76,9 @@ a2enmod rewrite >> /vagrant/vagrant_build.log 2>&1
 echo -e "\n--- Configuration VirtualHost ... ---\n"
 echo "${VHOST}" > /etc/apache2/sites-enabled/000-default.conf
 
+sed -i -e 's/export APACHE_RUN_USER=\(.*\)/export APACHE_RUN_USER=vagrant/' /etc/apache2/envvars
+sed -i -e 's/export APACHE_RUN_GROUP=\(.*\)/export APACHE_RUN_GROUP=vagrant/' /etc/apache2/envvars
+
 service apache2 restart
 
 # Installing and configuration PHP
