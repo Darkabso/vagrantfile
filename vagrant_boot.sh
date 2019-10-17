@@ -1,12 +1,14 @@
 ################################################################
 # Supported version:
 # PHP_VERSION = "5.6", "7.0", "7.1", "7.2", "7.3", "7.4"
+# PHP memory limit for CLI is set -1
 # MYSQL_VERSION = "5.6", "5.7"
 # NODE_VERSION = "4", "5", "6", "7", "8", "9", "10", "11", "12"
 ################################################################
 
 # Variables
 PHP_VERSION="7.2"
+PHP_MEMORY_LIMIT="512"
 MYSQL_VERSION="5.7"
 NODE_VERSION="12"
 DB_PASSWD_ROOT="root"
@@ -45,6 +47,9 @@ add-apt-repository 'deb http://archive.ubuntu.com/ubuntu trusty universe' >> /va
 
 echo -e "\n--- Updating packages list... ---\n"
 apt-get update >> /vagrant/vagrant_build.log 2>&1
+
+echo -e "\n--- Upgrade packages... ---\n"
+apt-get -y upgrade >> /vagrant/vagrant_build.log 2>&1
 
 # Installing and configuration MySQL
 echo -e "\n--- Installing and configuration MySQL version: $MYSQL_VERSION... ---\n"
@@ -98,14 +103,16 @@ apt-get install -y php$PHP_VERSION-xsl >> /vagrant/vagrant_build.log 2>&1
 apt-get install -y php$PHP_VERSION-json >> /vagrant/vagrant_build.log 2>&1
 apt-get install -y php$PHP_VERSION-sqlite3 >> /vagrant/vagrant_build.log 2>&1
 apt-get install -y php$PHP_VERSION-xdebug >> /vagrant/vagrant_build.log 2>&1
+apt-get install -y php$PHP_VERSION-imap >> /vagrant/vagrant_build.log 2>&1
 echo "${XDEBUG}" >> /etc/php/$PHP_VERSION/cli/conf.d/20-xdebug.ini
+sed -i -e "s/memory_limit\(.*\)/memory_limit = $PHP_MEMORY_LIMIT/" /etc/php/$PHP_VERSION/apache2/php.ini
+sed -i -e "s/memory_limit\(.*\)/memory_limit = $PHP_MEMORY_LIMIT/" /etc/php/$PHP_VERSION/cgi/php.ini
 
 service apache2 restart
 
 # Installing Composer
 echo -e "\n--- Installing Composer... ---\n"
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" >> /vagrant/vagrant_build.log 2>&1
-php -r "if (hash_file('SHA384', 'composer-setup.php') === '544e09ee996cdf60ece3804abc52599c22b1f40f4323403c44d44fdfdd586475ca9813a858088ffbc1f233e9b180f061') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" >> /vagrant/vagrant_build.log 2>&1
 php composer-setup.php --install-dir=/usr/local/bin --filename=composer >> /vagrant/vagrant_build.log 2>&1
 php -r "unlink('composer-setup.php');" >> /vagrant/vagrant_build.log 2>&1
 
