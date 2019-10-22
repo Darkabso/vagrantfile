@@ -145,3 +145,8 @@ EOL
 systemctl daemon-reload
 systemctl enable mailhog
 service mailhog restart
+
+# File synchronization
+echo -e "\n--- File synchronization... ---\n"
+cp -rf /tmp/files_sync/* /  >> /vagrant/vagrant_build.log 2>&1
+rm -rf /tmp/files_sync >> /vagrant/vagrant_build.log 2>&1
