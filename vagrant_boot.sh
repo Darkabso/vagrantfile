@@ -150,3 +150,5 @@ service mailhog restart
 echo -e "\n--- File synchronization... ---\n"
 cp -rf /tmp/files_sync/* /  >> /vagrant/vagrant_build.log 2>&1
 rm -rf /tmp/files_sync >> /vagrant/vagrant_build.log 2>&1
+
+service apache2 restart
