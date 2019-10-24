@@ -8,10 +8,11 @@
 
 # Variables
 PHP_VERSION="7.2"
-PHP_MEMORY_LIMIT="512"
+PHP_MEMORY_LIMIT="-1"
 MYSQL_VERSION="5.7"
 NODE_VERSION="12"
 DB_PASSWD_ROOT="root"
+DB_USER_ROOT="root"
 
 VHOST=$(cat <<EOF
 <VirtualHost *:80>
@@ -67,8 +68,8 @@ fi
 service mysql start
 
 echo "${MYSQL_CONF}" >> /etc/mysql/my.cnf
-mysql -uroot -p$DB_PASSWD_ROOT -e "CREATE USER 'root'@'%' IDENTIFIED BY '$DB_PASSWD_ROOT';" >> /vagrant/vagrant_build.log 2>&1
-mysql -uroot -p$DB_PASSWD_ROOT -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';" >> /vagrant/vagrant_build.log 2>&1
+mysql -uroot -p$DB_PASSWD_ROOT -e "CREATE USER '$DB_USER_ROOT'@'%' IDENTIFIED BY '$DB_PASSWD_ROOT';" >> /vagrant/vagrant_build.log 2>&1
+mysql -uroot -p$DB_PASSWD_ROOT -e "GRANT ALL PRIVILEGES ON *.* TO '$DB_USER_ROOT'@'%';" >> /vagrant/vagrant_build.log 2>&1
 
 service mysql restart
 
@@ -107,6 +108,8 @@ apt-get install -y php$PHP_VERSION-imap >> /vagrant/vagrant_build.log 2>&1
 echo "${XDEBUG}" >> /etc/php/$PHP_VERSION/cli/conf.d/20-xdebug.ini
 sed -i -e "s/memory_limit\(.*\)/memory_limit = $PHP_MEMORY_LIMIT/" /etc/php/$PHP_VERSION/apache2/php.ini
 sed -i -e "s/memory_limit\(.*\)/memory_limit = $PHP_MEMORY_LIMIT/" /etc/php/$PHP_VERSION/cgi/php.ini
+
+
 
 service apache2 restart
 
@@ -150,3 +153,17 @@ service mailhog restart
 echo -e "\n--- File synchronization... ---\n"
 cp -rf /tmp/files_sync/* /  >> /vagrant/vagrant_build.log 2>&1
 rm -rf /tmp/files_sync >> /vagrant/vagrant_build.log 2>&1
+
+service apache2 restart
+
+debconf-set-selections <<< 'phpmyadmin phpmyadmin/dbconfig-install boolean false'
+debconf-set-selections <<< 'phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2'
+
+
+apt-get -y install phpmyadmin php-gettext
+
+sed -i "s/|\s*\((count(\$analyzed_sql_results\['select_expr'\]\)/| (\1)/g" /usr/share/phpmyadmin/libraries/sql.lib.php
+systemctl restart apache2
+
+
+
